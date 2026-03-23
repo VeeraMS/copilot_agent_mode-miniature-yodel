@@ -1,40 +1,29 @@
 {
-  "name": "demo-copilot-agent-mode",
-  "version": "1.0.0",
-  "description": "OctoCAT Supply Chain Management System",
-  "private": true,
-  "workspaces": [
-    "api",
-    "frontend"
-  ],
+    "name": "expert-octo-garbanzo",
+    "version": "1.0.0",
+    "description": "OctoCAT Supply Chain Management System",
+    "private": true,
+    "workspaces": [
+      "frontend"
+    ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "start": "npm run start:install --workspace=api",
-    "dev:api": "npm run dev --workspace=api",
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "db:seed": "npm run db:init --workspace=api -- --seed",
-    "dev": "npm run db:seed && concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
-    "test": "npm run test --workspaces",
-    "test:api": "npm run test --workspace=api",
+    "build": "npm run build:frontend && npm run build:api",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:api": "cd api && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt",
+    "setup:api": "cd api && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt",
+    "start:api": "cd api && (test -d .venv || (python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt)) && . .venv/bin/activate && uvicorn app.main:app --reload --port 3000",
+    "start:frontend": "npm run dev --workspace=frontend",
+    "dev": "concurrently \"npm run start:api\" \"npm run start:frontend\"",
+    "test": "concurrently \"cd api && (test -d .venv || npm run setup:api) && . .venv/bin/activate && pytest\" \"npm run test --workspace=frontend\"",
+    "test:api": "cd api && (test -d .venv || npm run setup:api) && . .venv/bin/activate && pytest",
     "test:frontend": "npm run test --workspace=frontend",
-    "lint": "npm run lint --workspace=frontend",
-    "prettify": "prettier --cache --write \"**/*.{ts,tsx}\""
+    "lint": "npm run lint --workspace=frontend"
   },
-  "devDependencies": {
-    "concurrently": "^6.2.1",
-    "prettier": "^3.3.3"
-  },
-  "prettier": {
-    "singleQuote": true,
-    "semi": true,
-    "trailingComma": "all",
-    "printWidth": 100,
-    "tabWidth": 2,
-    "arrowParens": "always",
-    "endOfLine": "lf"
-  },
-  "license": "MIT",
-  "engines": {
-    "node": ">=18"
-  }
+    "devDependencies": {
+      "concurrently": "^6.2.1"
+    },
+    "license": "MIT",
+    "engines": {
+      "node": ">=18"
+    }
 }

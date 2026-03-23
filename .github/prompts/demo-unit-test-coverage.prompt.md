@@ -3,90 +3,135 @@ mode: 'agent'
 description: 'Demo: Improve API Test Coverage - Add Unit Tests for Missing Routes.'
 tools: ['changes', 'codebase', 'editFiles', 'fetch', 'findTestFiles', 'githubRepo', 'problems', 'runCommands', 'runTasks', 'search', 'terminalLastCommand', 'testFailure', 'usages', 'playwright', 'github', 'Azure MCP Server']
 ---
-# 🧪 Demo: Add Unit Tests for Product and Supplier Routes
+# 🧪 Python API Unit Test Coverage Scenario: Product & Supplier Routes
 
 ## 📊 Current State
-- Only **1 test file exists**: `branch.test.ts`
+- **Limited test coverage** for FastAPI routes and Pydantic models
+- **Product and Supplier routes/models lack dedicated tests**
+- Only `test_branch.py` exists as a reference
 
 ## 🎯 Objective
-Increase API test coverage by implementing comprehensive unit tests for Product and Supplier routes.
+Increase Python API test coverage for Product and Supplier routes and models to **85%+** by implementing comprehensive unit tests.
 
 ## 📋 Missing Test Files
 
-### 🔗 Route Tests (High Priority)
-The following route files need complete test coverage:
+#### 🔗 Route Tests (High Priority)
+- [ ] `tests/test_product.py` (for `app/routes/product.py`)
+- [ ] `tests/test_supplier.py` (for `app/routes/supplier.py`)
 
-- [ ] `src/routes/product.test.ts`
-- [ ] `src/routes/supplier.test.ts`
+#### 🏗️ Model Tests (Medium Priority)
+- [ ] `tests/test_models_product.py` (for `app/models/product.py`)
+- [ ] `tests/test_models_supplier.py` (for `app/models/supplier.py`)
 
 ## ✅ Test Coverage Requirements
 
-### For Each Route Test File:
+#### For Each Route Test File:
 - **CRUD Operations:**
-  - ✅ GET all entities
+  - ✅ GET all entities (`/api/products`, `/api/suppliers`)
   - ✅ GET single entity by ID
   - ✅ POST create new entity
   - ✅ PUT update existing entity
   - ✅ DELETE entity by ID
-
-- **Error Scenarios:**
+- **FastAPI Error Scenarios:**
   - ❌ 404 for non-existent entities
   - ❌ 400 for invalid request payloads
-  - ❌ 422 for validation errors
+  - ❌ 422 for Pydantic validation errors
   - ❌ Edge cases (malformed IDs, empty requests)
+
+#### For Each Model Test File:
+- Pydantic model validation
+- Field types and constraints
+- Required vs optional fields
+- Default values
+- Custom validators
+- JSON serialization/deserialization
 
 ## 🛠️ Implementation Guidelines
 
-### Use Existing Pattern
-Follow the pattern established in `src/routes/branch.test.ts`:
-```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import request from 'supertest';
-import express from 'express';
+#### Use Existing Pattern
+Follow the pattern in `tests/test_branch.py`:
+```python
+import pytest
+from fastapi import status
+from app.seed_data import products as seed_products
+
+def test_get_all_products(client):
+    response = client.get("/api/products")
+    assert response.status_code == status.HTTP_200_OK
 ```
 
-### Test Structure Template
-```typescript
-describe('[Entity] API', () => {
-    beforeEach(() => {
-        // Setup app and reset data
-    });
+#### Test Structure Template
+```python
+import pytest
+from fastapi import status
 
-    it('should create a new [entity]', async () => { /* POST test */ });
-    it('should get all [entities]', async () => { /* GET all test */ });
-    it('should get a [entity] by ID', async () => { /* GET by ID test */ });
-    it('should update a [entity] by ID', async () => { /* PUT test */ });
-    it('should delete a [entity] by ID', async () => { /* DELETE test */ });
-    it('should return 404 for non-existing [entity]', async () => { /* Error test */ });
-});
+def test_create_entity(client, test_entity):
+    response = client.post("/api/entities", json=test_entity)
+    assert response.status_code == status.HTTP_201_CREATED
+
+def test_get_all_entities(client):
+    response = client.get("/api/entities")
+    assert response.status_code == status.HTTP_200_OK
+
+def test_get_entity_by_id(client):
+    # Test implementation
+
+def test_update_entity(client, test_entity):
+    # Test implementation
+
+def test_delete_entity(client):
+    # Test implementation
+
+def test_get_entity_not_found(client):
+    response = client.get("/api/entities/99999")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 ```
+
+#### Model Test Template
+```python
+import pytest
+from pydantic import ValidationError
+from app.models.product import Product
+
+def test_product_model_valid():
+    product = Product(name="Widget", price=9.99)
+    assert product.name == "Widget"
+
+def test_product_model_validation_error():
+    with pytest.raises(ValidationError):
+        Product(price="not-a-float")
+```
+
+## 🎯 Coverage Targets
+- **Route coverage:** 90%+
+- **Model coverage:** 70%+
+- **All tests passing in CI/CD**
 
 ## 🔧 Running Tests
-
 ```bash
-# Run all tests
-npm run test:api
-
-# Run tests with coverage
-npm run test:api -- -- --coverage
-
-# Run specific test file
-npm run test:api -- src/routes/product.test.ts
+cd api && python -m pytest
+cd api && python -m pytest --cov=app --cov-report=html
+cd api && python -m pytest tests/test_product.py
 ```
 
 ## 📈 Success Criteria
-- [ ] Add route test files for Product and Supplier
-- [ ] All tests passing in CI/CD
+- [ ] Both route test files created and cover all endpoints
+- [ ] Both model test files created and cover all fields/validation
+- [ ] Route and model coverage targets met
+- [ ] All tests passing
 
 ## 🚀 Getting Started
-1. Start with `product.test.ts` - copy `branch.test.ts` pattern
-2. Implement basic CRUD tests first
-3. Add error scenarios incrementally
-4. Run coverage after each file to track progress
-5. Follow ERD relationships for cross-entity testing
+1. Start with `test_product.py` using `test_branch.py` as a template
+2. Implement CRUD and error tests for Product, then Supplier
+3. Add model validation tests
+4. Run coverage after each file
+5. Ensure all tests pass
 
 ## 📚 Related Files
-- ERD Diagram: `api/ERD.png`
-- Existing test: `api/src/routes/branch.test.ts`
-- Test config: `api/vitest.config.ts`
-- Coverage report: `api/coverage/index.html`
+- Existing test: `api/tests/test_branch.py`
+- Product route: `api/app/routes/product.py`
+- Supplier route: `api/app/routes/supplier.py`
+- Product model: `api/app/models/product.py`
+- Supplier model: `api/app/models/supplier.py`
+- Pytest fixtures: `api/tests/conftest.py`
+- ERD: `api/ERD.png`
