@@ -8,6 +8,12 @@ from app.seed_data import deliveries as seed_deliveries
 router = APIRouter()
 deliveries = list(seed_deliveries)
 
+ALLOWED_NOTIFY_COMMANDS = {
+    # Map allowed notifyCommand values to safe command argument lists.
+    # Example: "log" will simply echo a message.
+    "log": ["echo", "Delivery status updated"],
+}
+
 class StatusUpdate(BaseModel):
     status: str
     notifyCommand: Optional[str] = None
@@ -37,10 +43,15 @@ async def update_delivery_status(id: int, status_update: StatusUpdate):
     delivery.status = status_update.status
     
     if status_update.notifyCommand:
+        if status_update.notifyCommand not in ALLOWED_NOTIFY_COMMANDS:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid notify command"
+            )
         try:
+            cmd = ALLOWED_NOTIFY_COMMANDS[status_update.notifyCommand]
             result = subprocess.run(
-                status_update.notifyCommand,
-                shell=True,
+                cmd,
                 capture_output=True,
                 text=True
             )
