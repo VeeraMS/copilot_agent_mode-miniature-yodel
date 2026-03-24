@@ -25,3 +25,11 @@ To run the unit tests for the API, run:
 ```bash
 npm run test:api
 ```
+# Additional Guidelines for REST APIs
+
+For REST APIs, use the following guidelines:
+
+* Use descriptive naming
+* Add Swagger docs for all API methods
+* Implement logging and monitoring using [TAO](../docs/tao.md)
+  - assume TAO is installed and never add the package
