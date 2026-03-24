@@ -12,16 +12,10 @@ export default function Cart() {
         <div className="max-w-4xl mx-auto text-center py-16">
           <svg
             className={`mx-auto h-24 w-24 ${darkMode ? 'text-gray-600' : 'text-gray-400'} mb-6`}
-            fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            fill="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
-            />
+            <path d="M2 2a1 1 0 000 2h1.22l.305 1.222A1 1 0 003 6v10a2 2 0 002 2h14a2 2 0 002-2V6a1 1 0 00-.025-.223L20.22 4H22a1 1 0 000-2H2zm2.28 4h13.44l.5 2H3.78l.5-2zM5 14v-4h14v4H5zm2 4a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z" />
           </svg>
           <h2 className={`text-2xl font-bold ${darkMode ? 'text-light' : 'text-gray-800'} mb-4`}>Your cart is empty</h2>
           <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-8`}>
@@ -40,13 +34,13 @@ export default function Cart() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-dark' : 'bg-gray-100'} pt-20 pb-16 px-4 transition-colors duration-300`}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className={`text-3xl font-bold ${darkMode ? 'text-light' : 'text-gray-800'} mb-8 transition-colors duration-300`}>
           Shopping Cart
         </h1>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Cart Items */}
+          {/* Cart Items — ~65% width on desktop */}
           <div className="flex-grow space-y-4">
             {items.map((item: CartItem) => {
               const effectivePrice = item.discount
@@ -56,14 +50,14 @@ export default function Cart() {
               return (
                 <div
                   key={item.productId}
-                  className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md p-4 flex items-center gap-4 transition-colors duration-300`}
+                  className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-md p-4 flex items-center gap-5 transition-colors duration-300`}
                 >
-                  {/* Product Image */}
-                  <div className={`w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  {/* Larger Product Image */}
+                  <div className={`w-28 h-28 flex-shrink-0 rounded-lg overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                     <img
                       src={`/${item.imgName}`}
                       alt={item.name}
-                      className="w-full h-full object-contain p-1"
+                      className="w-full h-full object-contain p-2"
                     />
                   </div>
 
@@ -72,7 +66,7 @@ export default function Cart() {
                     <h3 className={`text-lg font-semibold ${darkMode ? 'text-light' : 'text-gray-800'} truncate transition-colors duration-300`}>
                       {item.name}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-2">
                       {item.discount ? (
                         <>
                           <span className="text-gray-500 line-through text-sm">${item.price.toFixed(2)}</span>
@@ -84,36 +78,36 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  {/* Quantity Controls */}
-                  <div className={`flex items-center space-x-3 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-lg p-1 transition-colors duration-300`}>
+                  {/* Pill-style Quantity Stepper */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                      className={`w-8 h-8 flex items-center justify-center ${darkMode ? 'text-light' : 'text-gray-700'} hover:text-primary transition-colors duration-300`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${darkMode ? 'bg-gray-700 text-light hover:bg-primary hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-primary hover:text-white'} transition-colors duration-200`}
                       aria-label={`Decrease quantity of ${item.name}`}
                     >
-                      -
+                      −
                     </button>
-                    <span className={`${darkMode ? 'text-light' : 'text-gray-800'} min-w-[2rem] text-center`}>
+                    <span className={`${darkMode ? 'text-light' : 'text-gray-800'} w-6 text-center font-medium`}>
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                      className={`w-8 h-8 flex items-center justify-center ${darkMode ? 'text-light' : 'text-gray-700'} hover:text-primary transition-colors duration-300`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${darkMode ? 'bg-gray-700 text-light hover:bg-primary hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-primary hover:text-white'} transition-colors duration-200`}
                       aria-label={`Increase quantity of ${item.name}`}
                     >
                       +
                     </button>
                   </div>
 
-                  {/* Item Subtotal */}
-                  <div className={`text-right min-w-[5rem] ${darkMode ? 'text-light' : 'text-gray-800'}`}>
-                    <span className="font-bold">${(effectivePrice * item.quantity).toFixed(2)}</span>
+                  {/* Line Subtotal */}
+                  <div className={`text-right min-w-[5rem] flex-shrink-0 ${darkMode ? 'text-light' : 'text-gray-800'}`}>
+                    <span className="font-bold text-lg">${(effectivePrice * item.quantity).toFixed(2)}</span>
                   </div>
 
-                  {/* Remove Button */}
+                  {/* Trash Remove Button */}
                   <button
                     onClick={() => removeFromCart(item.productId)}
-                    className={`p-2 ${darkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'} transition-colors`}
+                    className={`p-2 flex-shrink-0 ${darkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-400 hover:text-red-500'} transition-colors`}
                     aria-label={`Remove ${item.name} from cart`}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,10 +119,10 @@ export default function Cart() {
             })}
           </div>
 
-          {/* Order Summary */}
-          <div className="lg:w-80 flex-shrink-0">
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md p-6 sticky top-24 transition-colors duration-300`}>
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-light' : 'text-gray-800'} mb-4`}>Order Summary</h2>
+          {/* Sticky Order Summary — ~35% width on desktop */}
+          <div className="lg:w-80 xl:w-96 flex-shrink-0">
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-md p-6 sticky top-24 transition-colors duration-300`}>
+              <h2 className={`text-xl font-bold ${darkMode ? 'text-light' : 'text-gray-800'} mb-5`}>Order Summary</h2>
 
               <div className="space-y-3">
                 <div className={`flex justify-between ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -159,15 +153,33 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-primary hover:bg-accent text-white py-3 rounded-lg font-medium transition-colors">
-                Checkout
+              {/* Promo code input (placeholder only) */}
+              <div className={`mt-5 flex gap-2`}>
+                <input
+                  type="text"
+                  placeholder="Promo code"
+                  className={`flex-grow px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-primary ${darkMode ? 'bg-gray-700 border-gray-600 text-light placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'} transition-colors`}
+                />
+                <button
+                  className={`px-3 py-2 rounded-lg text-sm font-medium border ${darkMode ? 'border-gray-600 text-gray-300 hover:border-primary hover:text-primary' : 'border-gray-300 text-gray-600 hover:border-primary hover:text-primary'} transition-colors`}
+                >
+                  Apply
+                </button>
+              </div>
+
+              {/* Proceed to Checkout with lock icon */}
+              <button className="w-full mt-5 bg-primary hover:bg-accent text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                Proceed to Checkout
               </button>
 
               <Link
                 to="/products"
                 className={`block text-center mt-3 ${darkMode ? 'text-gray-400 hover:text-primary' : 'text-gray-500 hover:text-primary'} text-sm transition-colors`}
               >
-                Continue Shopping
+                ← Continue Shopping
               </Link>
             </div>
           </div>
@@ -176,3 +188,4 @@ export default function Cart() {
     </div>
   );
 }
+
