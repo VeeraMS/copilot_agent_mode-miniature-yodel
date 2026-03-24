@@ -2,13 +2,30 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import Avatar from './Avatar';
 
 export default function Navigation() {
-  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { isLoggedIn, isAdmin, user, logout } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   const { itemCount } = useCart();
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(event.target as Node)) {
+        setAvatarMenuOpen(false);
+      }
+    }
+    if (avatarMenuOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [avatarMenuOpen]);
 
   return (
     <nav className={`${darkMode ? 'bg-dark/95' : 'bg-white/95'} backdrop-blur-sm fixed w-full z-50 shadow-md transition-colors duration-300`}>
@@ -32,6 +49,9 @@ export default function Navigation() {
               <Link to="/" className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Home</Link>
               <Link to="/products" className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Products</Link>
               <Link to="/about" className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>About us</Link>
+              {isLoggedIn && (
+                <Link to="/profile" className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Profile</Link>
+              )}
               {isAdmin && (
                 <div className="relative">
                   <button 
@@ -101,12 +121,34 @@ export default function Navigation() {
                   {isAdmin && <span className="text-primary">(Admin) </span>}
                   Welcome!
                 </span>
-                <button 
-                  onClick={logout}
-                  className={`${darkMode ? 'text-light hover:text-primary' : 'text-gray-700 hover:text-primary'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
-                >
-                  Logout
-                </button>
+                <div className="relative" ref={avatarMenuRef}>
+                  <button
+                    onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                    className="focus:outline-none"
+                    aria-label="User menu"
+                  >
+                    {user && <Avatar initials={user.initials} size="sm" />}
+                  </button>
+                  {avatarMenuOpen && (
+                    <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'} ring-1 ring-black ring-opacity-5 transition-colors`}>
+                      <div className="py-1">
+                        <Link
+                          to="/profile"
+                          className={`block px-4 py-2 text-sm ${darkMode ? 'text-light hover:bg-primary hover:text-white' : 'text-gray-700 hover:bg-primary hover:text-white'} transition-colors`}
+                          onClick={() => setAvatarMenuOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={() => { logout(); setAvatarMenuOpen(false); }}
+                          className={`w-full text-left block px-4 py-2 text-sm ${darkMode ? 'text-light hover:bg-primary hover:text-white' : 'text-gray-700 hover:bg-primary hover:text-white'} transition-colors`}
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <Link 
